@@ -6,6 +6,7 @@ import { errorHandler } from './middleware/errorHandler';
 import shopsRouter from './routes/shops';
 import productsRouter from './routes/products';
 import ordersRouter from './routes/orders';
+import couponsRouter from './routes/coupons';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get('/health', (_req, res) => {
 app.use('/shops', shopsRouter);
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
+app.use('/coupons', couponsRouter);
 
 app.use(errorHandler);
 

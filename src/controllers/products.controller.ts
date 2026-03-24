@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import { productQuerySchema, parse } from '../lib/validations';
-import { getProducts } from '../services/products.service';
+import { getProducts, getProductCategories } from '../services/products.service';
+
+export async function listCategories(_req: Request, res: Response) {
+  const categories = await getProductCategories();
+  res.json(categories);
+}
 
 export async function listProducts(req: Request, res: Response) {
   const { shopId, category, sort, cursor, limit } = parse(productQuerySchema, req.query);

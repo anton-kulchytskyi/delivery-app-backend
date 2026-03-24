@@ -1,30 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Mock prisma before importing pagination
-vi.mock('./prisma', () => ({
-  default: {
-    product: {
-      findMany: vi.fn(),
-    },
-  },
-}));
-
+import { describe, it, expect, vi } from 'vitest';
 import { paginateProducts } from './pagination';
-import prisma from './prisma';
+import type { Db } from './prisma';
+
+const makeDb = (findMany: ReturnType<typeof vi.fn>): Db =>
+  ({ product: { findMany } } as unknown as Db);
 
 describe('paginateProducts', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('returns data and null nextCursor when results fit in limit', async () => {
-    const mockProducts = [
-      { id: '1', name: 'A' },
-      { id: '2', name: 'B' },
-    ];
-    vi.mocked(prisma.product.findMany).mockResolvedValue(mockProducts as never);
+    const mockProducts = [{ id: '1', name: 'A' }, { id: '2', name: 'B' }];
+    const db = makeDb(vi.fn().mockResolvedValue(mockProducts));
 
-    const result = await paginateProducts({ limit: 5 });
+    const result = await paginateProducts({ limit: 5 }, db);
 
     expect(result.data).toHaveLength(2);
     expect(result.nextCursor).toBeNull();
@@ -34,38 +20,35 @@ describe('paginateProducts', () => {
     const mockProducts = [
       { id: '1', name: 'A' },
       { id: '2', name: 'B' },
-      { id: '3', name: 'C' }, // extra item — signals hasMore
+      { id: '3', name: 'C' },
     ];
-    vi.mocked(prisma.product.findMany).mockResolvedValue(mockProducts as never);
+    const db = makeDb(vi.fn().mockResolvedValue(mockProducts));
 
-    const result = await paginateProducts({ limit: 2 });
+    const result = await paginateProducts({ limit: 2 }, db);
 
     expect(result.data).toHaveLength(2);
     expect(result.nextCursor).toBe('2');
   });
 
-  it('passes cursor to prisma when provided', async () => {
-    vi.mocked(prisma.product.findMany).mockResolvedValue([]);
+  it('passes cursor to db when provided', async () => {
+    const findMany = vi.fn().mockResolvedValue([]);
+    const db = makeDb(findMany);
 
-    await paginateProducts({ limit: 12, cursor: 'abc-123' });
+    await paginateProducts({ limit: 12, cursor: 'abc-123' }, db);
 
-    expect(prisma.product.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cursor: { id: 'abc-123' },
-        skip: 1,
-      }),
+    expect(findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ cursor: { id: 'abc-123' }, skip: 1 }),
     );
   });
 
   it('filters by shopId when provided', async () => {
-    vi.mocked(prisma.product.findMany).mockResolvedValue([]);
+    const findMany = vi.fn().mockResolvedValue([]);
+    const db = makeDb(findMany);
 
-    await paginateProducts({ limit: 12, shopId: 'shop-1' });
+    await paginateProducts({ limit: 12, shopId: 'shop-1' }, db);
 
-    expect(prisma.product.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ shopId: 'shop-1' }),
-      }),
+    expect(findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ shopId: 'shop-1' }) }),
     );
   });
 });

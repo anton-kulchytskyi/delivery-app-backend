@@ -1,15 +1,9 @@
 import { Request, Response } from 'express';
-import { productQuerySchema } from '../lib/validations';
+import { productQuerySchema, parse } from '../lib/validations';
 import { getProducts } from '../services/products.service';
-import { AppError } from '../middleware/errorHandler';
 
 export async function listProducts(req: Request, res: Response) {
-  const result = productQuerySchema.safeParse(req.query);
-  if (!result.success) {
-    throw new AppError(400, result.error.issues[0]?.message ?? 'Invalid query');
-  }
-
-  const { shopId, category, sort, cursor, limit } = result.data;
+  const { shopId, category, sort, cursor, limit } = parse(productQuerySchema, req.query);
 
   const categories = category
     ? category.split(',').map((c) => c.trim()).filter(Boolean)

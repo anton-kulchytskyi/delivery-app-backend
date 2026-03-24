@@ -1,9 +1,9 @@
-import prisma from '../lib/prisma';
+import prisma, { type Db } from '../lib/prisma';
 
-export async function getShops(ratingMin?: number, ratingMax?: number) {
-const hasFilter = ratingMin !== undefined || ratingMax !== undefined;
+export async function getShops(ratingMin?: number, ratingMax?: number, db: Db = prisma) {
+  const hasFilter = ratingMin !== undefined || ratingMax !== undefined;
 
-  return prisma.shop.findMany({
+  return db.shop.findMany({
     where: hasFilter
       ? {
           rating: {

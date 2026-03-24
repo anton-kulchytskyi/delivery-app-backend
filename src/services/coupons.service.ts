@@ -1,15 +1,15 @@
-import prisma from '../lib/prisma';
+import prisma, { type Db } from '../lib/prisma';
 import { AppError } from '../middleware/errorHandler';
 
-export async function getCoupons() {
-  return prisma.coupon.findMany({
+export async function getCoupons(db: Db = prisma) {
+  return db.coupon.findMany({
     where: { isActive: true },
     orderBy: { discountPercent: 'desc' },
   });
 }
 
-export async function validateCoupon(code: string) {
-  const coupon = await prisma.coupon.findUnique({
+export async function validateCoupon(code: string, db: Db = prisma) {
+  const coupon = await db.coupon.findUnique({
     where: { code, isActive: true },
   });
 

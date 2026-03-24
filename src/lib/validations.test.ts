@@ -4,6 +4,7 @@ import {
   couponValidateSchema,
   shopQuerySchema,
   productQuerySchema,
+  orderSearchSchema,
 } from './validations';
 
 describe('validations', () => {
@@ -91,6 +92,28 @@ describe('validations', () => {
 
     it('rejects invalid sort value', () => {
       const result = productQuerySchema.safeParse({ sort: 'random' });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('orderSearchSchema', () => {
+    it('accepts search by id only', () => {
+      const result = orderSearchSchema.safeParse({ id: '123e4567-e89b-12d3-a456-426614174000' });
+      expect(result.success).toBe(true);
+    });
+
+    it('accepts search by email and phone', () => {
+      const result = orderSearchSchema.safeParse({ email: 'john@test.com', phone: '+380991234567' });
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects empty query — neither id nor email+phone', () => {
+      const result = orderSearchSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects email without phone', () => {
+      const result = orderSearchSchema.safeParse({ email: 'john@test.com' });
       expect(result.success).toBe(false);
     });
   });

@@ -1,17 +1,21 @@
-import prisma from './prisma';
+import prisma, { type Db } from './prisma';
+import type { Product } from '../generated/prisma/client';
 
 export interface CursorPage<T> {
   data: T[];
   nextCursor: string | null;
 }
 
-export async function paginateProducts(params: {
-  shopId?: string;
-  categories?: string[];
-  sort?: 'price_asc' | 'price_desc' | 'name_asc';
-  cursor?: string;
-  limit: number;
-}): Promise<CursorPage<unknown>> {
+export async function paginateProducts(
+  params: {
+    shopId?: string;
+    categories?: string[];
+    sort?: 'price_asc' | 'price_desc' | 'name_asc';
+    cursor?: string;
+    limit: number;
+  },
+  db: Db = prisma,
+): Promise<CursorPage<Product>> {
   const { shopId, categories, sort, cursor, limit } = params;
 
   const orderBy = sort === 'price_asc'
@@ -27,7 +31,7 @@ export async function paginateProducts(params: {
     ...(categories && categories.length > 0 ? { category: { in: categories } } : {}),
   };
 
-  const items = await prisma.product.findMany({
+  const items = await db.product.findMany({
     where,
     orderBy,
     take: limit + 1,

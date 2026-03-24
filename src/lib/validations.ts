@@ -23,10 +23,10 @@ export const productQuerySchema = z.object({
 });
 
 export const createOrderSchema = z.object({
-  name: z.string().min(2),
+  name: z.string().min(2).max(100),
   email: z.string().email().optional(),
-  phone: z.string().regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number'),
-  address: z.string().min(5),
+  phone: z.string().regex(/^\+38\d{10}$/, 'Invalid phone number'),
+  address: z.string().min(5).max(200),
   couponCode: z.string().optional(),
   items: z
     .array(

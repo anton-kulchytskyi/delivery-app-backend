@@ -5,7 +5,7 @@ import { validateCoupon } from './coupons.service';
 export async function createOrder(
   data: {
     name: string;
-    email: string;
+    email?: string;
     phone: string;
     address: string;
     couponCode?: string;
@@ -67,10 +67,10 @@ export async function createOrder(
 }
 
 export async function searchOrders(
-  params: { id?: string; email?: string; phone?: string },
+  params: { id?: string; phone?: string },
   db: Db = prisma,
 ) {
-  const { id, email, phone } = params;
+  const { id, phone } = params;
 
   if (id) {
     const order = await db.order.findUnique({
@@ -81,7 +81,7 @@ export async function searchOrders(
   }
 
   return db.order.findMany({
-    where: { email, phone },
+    where: { phone },
     orderBy: { createdAt: 'desc' },
     include: { items: { include: { product: true } } },
   });

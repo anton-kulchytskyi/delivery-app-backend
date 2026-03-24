@@ -11,8 +11,8 @@ export async function postOrder(req: Request, res: Response) {
 }
 
 export async function getOrders(req: Request, res: Response) {
-  const { id, email, phone } = parse(orderSearchSchema, req.query);
-  const orders = await searchOrders({ id, email, phone });
+  const { id, phone } = parse(orderSearchSchema, req.query);
+  const orders = await searchOrders({ id, phone });
   res.json(orders);
 }
 

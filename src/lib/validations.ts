@@ -24,7 +24,7 @@ export const productQuerySchema = z.object({
 
 export const createOrderSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  email: z.string().email().optional(),
   phone: z.string().min(7),
   address: z.string().min(5),
   couponCode: z.string().optional(),
@@ -41,11 +41,10 @@ export const createOrderSchema = z.object({
 export const orderSearchSchema = z
   .object({
     id: z.string().uuid().optional(),
-    email: z.string().email().optional(),
     phone: z.string().optional(),
   })
-  .refine((data) => data.id !== undefined || (data.email !== undefined && data.phone !== undefined), {
-    message: 'Provide either order id or both email and phone',
+  .refine((data) => data.id !== undefined || data.phone !== undefined, {
+    message: 'Provide either order id or phone number',
   });
 
 export const couponValidateSchema = z.object({

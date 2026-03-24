@@ -30,7 +30,7 @@ model Product {
 model Order {
   id         String      @id @default(uuid())
   name       String
-  email      String
+  email      String?
   phone      String
   address    String
   totalPrice Float

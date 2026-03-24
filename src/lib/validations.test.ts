@@ -102,18 +102,13 @@ describe('validations', () => {
       expect(result.success).toBe(true);
     });
 
-    it('accepts search by email and phone', () => {
-      const result = orderSearchSchema.safeParse({ email: 'john@test.com', phone: '+380991234567' });
+    it('accepts search by phone only', () => {
+      const result = orderSearchSchema.safeParse({ phone: '+380991234567' });
       expect(result.success).toBe(true);
     });
 
-    it('rejects empty query — neither id nor email+phone', () => {
+    it('rejects empty query — neither id nor phone', () => {
       const result = orderSearchSchema.safeParse({});
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects email without phone', () => {
-      const result = orderSearchSchema.safeParse({ email: 'john@test.com' });
       expect(result.success).toBe(false);
     });
   });

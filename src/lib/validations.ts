@@ -15,23 +15,23 @@ export const shopQuerySchema = z.object({
 });
 
 export const productQuerySchema = z.object({
-  shopId: z.string().uuid().optional(),
+  shopId: z.uuid().optional(),
   category: z.string().optional(),
   sort: z.enum(['price_asc', 'price_desc', 'name_asc']).optional(),
-  cursor: z.string().uuid().optional(),
+  cursor: z.uuid().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(12),
 });
 
 export const createOrderSchema = z.object({
   name: z.string().min(2).max(100),
-  email: z.string().email().optional(),
-  phone: z.string().regex(/^\+38\d{10}$/, 'Invalid phone number'),
+  email: z.email().optional(),
+  phone: z.string().regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number'),
   address: z.string().min(5).max(200),
   couponCode: z.string().optional(),
   items: z
     .array(
       z.object({
-        productId: z.string().uuid(),
+        productId: z.uuid(),
         quantity: z.number().int().min(1),
       }),
     )
@@ -40,8 +40,8 @@ export const createOrderSchema = z.object({
 
 export const orderSearchSchema = z
   .object({
-    id: z.string().uuid().optional(),
-    phone: z.string().regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number').optional(),
+    id: z.uuid().optional(),
+    phone: z.string().optional(),
   })
   .refine((data) => data.id !== undefined || data.phone !== undefined, {
     message: 'Provide either order id or phone number',

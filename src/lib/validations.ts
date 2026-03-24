@@ -25,7 +25,7 @@ export const productQuerySchema = z.object({
 export const createOrderSchema = z.object({
   name: z.string().min(2),
   email: z.string().email().optional(),
-  phone: z.string().min(7),
+  phone: z.string().regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number'),
   address: z.string().min(5),
   couponCode: z.string().optional(),
   items: z
@@ -41,7 +41,7 @@ export const createOrderSchema = z.object({
 export const orderSearchSchema = z
   .object({
     id: z.string().uuid().optional(),
-    phone: z.string().optional(),
+    phone: z.string().regex(/^\+?[0-9\s\-()]{7,20}$/, 'Invalid phone number').optional(),
   })
   .refine((data) => data.id !== undefined || data.phone !== undefined, {
     message: 'Provide either order id or phone number',

@@ -37,6 +37,16 @@ describe('validations', () => {
       expect(result.success).toBe(false);
     });
 
+    it('rejects phone with letters', () => {
+      const result = createOrderSchema.safeParse({ ...validOrder, phone: '+380abc1234567' });
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects phone that is too long', () => {
+      const result = createOrderSchema.safeParse({ ...validOrder, phone: '+123456789012345678901' });
+      expect(result.success).toBe(false);
+    });
+
     it('accepts order with coupon', () => {
       const result = createOrderSchema.safeParse({ ...validOrder, couponCode: 'SAVE10' });
       expect(result.success).toBe(true);

@@ -26,6 +26,18 @@ npx prisma db seed
 npm run dev
 ```
 
+## Testing
+
+```bash
+npm run test
+```
+
+Covers: coupon validation logic, cursor-based pagination helper.
+
+## Complexity Level
+
+**Advanced** — includes all Base, Middle, and Advanced requirements plus Bonus features (Coupons page, Order History with reorder).
+
 ## API overview
 
 | Method | Path | Description |

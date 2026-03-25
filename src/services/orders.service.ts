@@ -5,7 +5,7 @@ import { validateCoupon } from './coupons.service';
 export async function createOrder(
   data: {
     name: string;
-    email?: string;
+    email: string;
     phone: string;
     address: string;
     couponCode?: string;
